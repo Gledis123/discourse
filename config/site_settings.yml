@@ -2337,6 +2337,12 @@ developer:
     refresh: true
     hidden: true
     client: true
+  experimental_glimmer_header_groups:
+    client: true
+    type: group_list
+    list_type: compact
+    default: ""
+    allow_any: false
   admin_sidebar_enabled_groups:
     client: true
     type: group_list
