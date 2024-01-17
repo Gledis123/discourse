@@ -135,13 +135,14 @@ import {
 } from "discourse-common/lib/icon-library";
 import { CUSTOM_USER_SEARCH_OPTIONS } from "select-kit/components/user-chooser";
 import { modifySelectKit } from "select-kit/mixins/plugin-api";
+import { addHeaderFancyTitleClass } from "discourse/components/glimmer-header/topic/info";
 
 // If you add any methods to the API ensure you bump up the version number
 // based on Semantic Versioning 2.0.0. Please update the changelog at
 // docs/CHANGELOG-JAVASCRIPT-PLUGIN-API.md whenever you change the version
 // using the format described at https://keepachangelog.com/en/1.0.0/.
 
-export const PLUGIN_API_VERSION = "1.24.0";
+export const PLUGIN_API_VERSION = "1.25.0";
 
 // This helper prevents us from applying the same `modifyClass` over and over in test mode.
 function canModify(klass, type, resolverName, changes) {
@@ -1283,6 +1284,19 @@ class PluginApi {
    */
   modifySelectKit(pluginApiKey) {
     return modifySelectKit(pluginApiKey);
+  }
+
+  /**
+   * Add a custom CSS class to the topic title within the header.
+   *
+   * ```javascript
+   * api.addHeaderFancyTitleClass('foo');
+   * api.addHeaderFancyTitleClass('bar');
+   * ```
+   *
+   **/
+  addHeaderFancyTitleClass(titleClass) {
+    return addHeaderFancyTitleClass(titleClass);
   }
 
   /**
