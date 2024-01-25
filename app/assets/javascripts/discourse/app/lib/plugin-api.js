@@ -100,6 +100,8 @@ import {
   addToHeaderIcons,
   attachAdditionalPanel,
 } from "discourse/widgets/header";
+import { attachAdditionalPanel as attachAdditionalGlimmerPanel } from "discourse/widgets/header";
+import { addToHeaderIcons as addToGlimmerHeaderIcons } from "discourse/components/glimmer-header/icons";
 import { addPostClassesCallback } from "discourse/widgets/post";
 import { addDecorator } from "discourse/widgets/post-cooked";
 import {
@@ -932,6 +934,7 @@ class PluginApi {
    **/
   addHeaderPanel(name, toggle, transformAttrs) {
     attachAdditionalPanel(name, toggle, transformAttrs);
+    attachAdditionalGlimmerPanel(name, toggle, transformAttrs);
   }
 
   /**
@@ -1733,6 +1736,7 @@ class PluginApi {
    **/
   addToHeaderIcons(icon) {
     addToHeaderIcons(icon);
+    addToGlimmerHeaderIcons(icon);
   }
 
   /**
