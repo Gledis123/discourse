@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/discourse/rubocop-discourse.git
+  revision: 0c1bb3fe660fa54d2ebcd36ba8bea82ff311ac17
+  branch: loic-plugins-rules
+  specs:
+    rubocop-discourse (3.6.0)
+      rubocop (>= 1.59.0)
+      rubocop-rspec (>= 2.25.0)
+
+GIT
   remote: https://github.com/rails/sprockets
   revision: f4d3dae71ef29c44b75a49cfbf8032cce07b423a
   branch: 3.x
@@ -418,9 +427,6 @@ GEM
       parser (>= 3.2.1.0)
     rubocop-capybara (2.20.0)
       rubocop (~> 1.41)
-    rubocop-discourse (3.6.1)
-      rubocop (>= 1.59.0)
-      rubocop-rspec (>= 2.25.0)
     rubocop-factory_bot (2.25.1)
       rubocop (~> 1.41)
     rubocop-rspec (2.26.1)
@@ -640,7 +646,7 @@ DEPENDENCIES
   rss
   rswag-specs
   rtlcss
-  rubocop-discourse
+  rubocop-discourse!
   ruby-prof
   ruby-readability
   rubyzip

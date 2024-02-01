@@ -8,6 +8,10 @@ Discourse/NoAddReferenceOrAliasesActiveRecordMigration:
 Discourse/NoResetColumnInformationInMigrations:
   Enabled: true
 
+Discourse/Plugins/CallRequiresPlugin:
+  Include:
+    - "plugins/*/app/controllers/**/*"
+
 Lint/Debugger:
   Exclude:
     - script/**/*
