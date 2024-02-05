@@ -1,8 +1,3 @@
-import {
-  createWatchedWordRegExp,
-  toWatchedWord,
-} from "discourse-common/utils/watched-words";
-
 const MAX_MATCHES = 100;
 
 function isLinkOpen(str) {
@@ -55,35 +50,27 @@ export function setup(helper) {
   helper.registerPlugin((md) => {
     const matchers = [];
 
-    if (md.options.discourse.watchedWordsReplace) {
-      Object.entries(md.options.discourse.watchedWordsReplace).forEach(
-        ([regexpString, options]) => {
-          const word = toWatchedWord({ [regexpString]: options });
+    md.options.discourse.watchedWordsReplace?.forEach(
+      ([regexp, caseSensitive, , replacement]) => {
+        matchers.push({
+          word: new RegExp(regexp, caseSensitive ? "" : "i"),
+          pattern: new RegExp(regexp, caseSensitive ? "gu" : "igu"),
+          replacement,
+          link: false,
+        });
+      }
+    );
 
-          matchers.push({
-            word: new RegExp(options.regexp, options.case_sensitive ? "" : "i"),
-            pattern: createWatchedWordRegExp(word),
-            replacement: options.replacement,
-            link: false,
-          });
-        }
-      );
-    }
-
-    if (md.options.discourse.watchedWordsLink) {
-      Object.entries(md.options.discourse.watchedWordsLink).forEach(
-        ([regexpString, options]) => {
-          const word = toWatchedWord({ [regexpString]: options });
-
-          matchers.push({
-            word: new RegExp(options.regexp, options.case_sensitive ? "" : "i"),
-            pattern: createWatchedWordRegExp(word),
-            replacement: options.replacement,
-            link: true,
-          });
-        }
-      );
-    }
+    md.options.discourse.watchedWordsLink?.forEach(
+      ([regexp, caseSensitive, , replacement]) => {
+        matchers.push({
+          word: new RegExp(regexp, caseSensitive ? "" : "i"),
+          pattern: new RegExp(regexp, caseSensitive ? "gu" : "igu"),
+          replacement,
+          link: true,
+        });
+      }
+    );
 
     if (matchers.length === 0) {
       return;

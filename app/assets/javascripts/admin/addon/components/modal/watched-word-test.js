@@ -31,7 +31,10 @@ export default class WatchedWordTest extends Component {
     if (this.isReplace || this.isLink) {
       const matches = [];
       this.args.model.watchedWord.words.forEach((word) => {
-        const regexp = createWatchedWordRegExp(word);
+        const regexp = createWatchedWordRegExp(
+          word.regexp,
+          word.case_sensitive
+        );
         let match;
 
         while ((match = regexp.exec(this.value)) !== null) {
@@ -45,7 +48,10 @@ export default class WatchedWordTest extends Component {
     } else if (this.isTag) {
       const matches = {};
       this.args.model.watchedWord.words.forEach((word) => {
-        const regexp = createWatchedWordRegExp(word);
+        const regexp = createWatchedWordRegExp(
+          word.regexp,
+          word.case_sensitive
+        );
         let match;
 
         while ((match = regexp.exec(this.value)) !== null) {
@@ -68,7 +74,11 @@ export default class WatchedWordTest extends Component {
       let matches = [];
       this.args.model.watchedWord.compiledRegularExpression.forEach(
         (regexp) => {
-          const wordRegexp = createWatchedWordRegExp(toWatchedWord(regexp));
+          const word = toWatchedWord(regexp);
+          const wordRegexp = createWatchedWordRegExp(
+            word.regexp,
+            word.case_sensitive
+          );
           matches.push(...(this.value.match(wordRegexp) || []));
         }
       );

@@ -198,8 +198,8 @@ module PrettyText
         __optInput.emojiUnicodeReplacer = __emojiUnicodeReplacer;
         __optInput.emojiDenyList = #{Emoji.denied.to_json};
         __optInput.lookupUploadUrls = __lookupUploadUrls;
-        __optInput.censoredRegexp = #{WordWatcher.serialized_regexps_for_action(:censor, engine: :js).to_json};
-        __optInput.watchedWordsReplace = #{WordWatcher.regexps_for_action(:replace, engine: :js).to_json};
+        __optInput.censoredRegexp = #{transform_watched_words(WordWatcher.serialized_regexps_for_action(:censor, engine: :js)).to_json};
+        __optInput.watchedWordsReplace = #{transform_watched_words(WordWatcher.regexps_for_action(:replace, engine: :js)).to_json};
         __optInput.watchedWordsLink = #{WordWatcher.regexps_for_action(:link, engine: :js).to_json};
         __optInput.additionalOptions = #{Site.markdown_additional_options.to_json};
         __optInput.avatar_sizes = #{SiteSetting.avatar_sizes.to_json};
@@ -765,5 +765,11 @@ module PrettyText
       end
 
     /\A(data:|#{patterns.join("|")})/
+  end
+
+  def self.transform_watched_words(obj)
+    obj.to_a.map do |(key, value)|
+      [key, value[:case_sensitive], value[:word], value[:replacement]].compact
+    end
   end
 end
