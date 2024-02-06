@@ -8,6 +8,10 @@ import {
 import { addPluginDocumentTitleCounter } from "discourse/components/d-document";
 import { addToolbarCallback } from "discourse/components/d-editor";
 import { addCategorySortCriteria } from "discourse/components/edit-category-settings";
+import { addCustomHeaderClass } from "discourse/components/glimmer-header";
+import { addToHeaderIcons as addToGlimmerHeaderIcons } from "discourse/components/glimmer-header/icons";
+import { addHeaderFancyTitleClass } from "discourse/components/glimmer-header/topic/info";
+import { forceDropdownForMenuPanels as glimmerForceDropdownForMenuPanels } from "discourse/components/glimmer-site-header";
 import { addGlobalNotice } from "discourse/components/global-notice";
 import { _addBulkButton } from "discourse/components/modal/topic-bulk-actions";
 import { addWidgetCleanCallback } from "discourse/components/mount-widget";
@@ -27,7 +31,6 @@ import { addOnKeyUpCallback } from "discourse/components/search-menu/search-term
 import { REFRESH_COUNTS_APP_EVENT_NAME as REFRESH_USER_SIDEBAR_CATEGORIES_SECTION_COUNTS_APP_EVENT_NAME } from "discourse/components/sidebar/user/categories-section";
 import { forceDropdownForMenuPanels } from "discourse/components/site-header";
 import { addTopicParticipantClassesCallback } from "discourse/components/topic-map/topic-participant";
-import { forceDropdownForMenuPanels as glimmerForceDropdownForMenuPanels } from "discourse/components/glimmer-site-header";
 import { setDesktopScrollAreaHeight } from "discourse/components/topic-timeline/container";
 import { addTopicTitleDecorator } from "discourse/components/topic-title";
 import { setNotificationsLimit as setUserMenuNotificationsLimit } from "discourse/components/user-menu/notifications-list";
@@ -100,8 +103,8 @@ import {
   addToHeaderIcons,
   attachAdditionalPanel,
 } from "discourse/widgets/header";
-import { attachAdditionalPanel as attachAdditionalGlimmerPanel } from "discourse/widgets/header";
-import { addToHeaderIcons as addToGlimmerHeaderIcons } from "discourse/components/glimmer-header/icons";
+// todo, add glimmer version
+// import { attachAdditionalPanel as attachAdditionalGlimmerPanel } from "discourse/widgets/header";
 import { addPostClassesCallback } from "discourse/widgets/post";
 import { addDecorator } from "discourse/widgets/post-cooked";
 import {
@@ -137,14 +140,13 @@ import {
 } from "discourse-common/lib/icon-library";
 import { CUSTOM_USER_SEARCH_OPTIONS } from "select-kit/components/user-chooser";
 import { modifySelectKit } from "select-kit/mixins/plugin-api";
-import { addHeaderFancyTitleClass } from "discourse/components/glimmer-header/topic/info";
 
 // If you add any methods to the API ensure you bump up the version number
 // based on Semantic Versioning 2.0.0. Please update the changelog at
 // docs/CHANGELOG-JAVASCRIPT-PLUGIN-API.md whenever you change the version
 // using the format described at https://keepachangelog.com/en/1.0.0/.
 
-export const PLUGIN_API_VERSION = "1.25.0";
+export const PLUGIN_API_VERSION = "1.26.0";
 
 // This helper prevents us from applying the same `modifyClass` over and over in test mode.
 function canModify(klass, type, resolverName, changes) {
@@ -934,7 +936,7 @@ class PluginApi {
    **/
   addHeaderPanel(name, toggle, transformAttrs) {
     attachAdditionalPanel(name, toggle, transformAttrs);
-    attachAdditionalGlimmerPanel(name, toggle, transformAttrs);
+    // attachAdditionalGlimmerPanel(name, toggle, transformAttrs);
   }
 
   /**
@@ -2706,6 +2708,18 @@ class PluginApi {
     this.container
       .lookup("service:admin-custom-user-fields")
       .addProperty(userFieldProperty);
+  }
+
+  /**
+   * Add a custom css class to the header. The class or classes will live alongside the `d-header` class.
+   *
+   * ```
+   * api.addCustomHeaderClass("class_one");
+   * api.addCustomHeaderClass("class_two");
+   *
+   */
+  addCustomHeaderClass(klass) {
+    addCustomHeaderClass(klass);
   }
 }
 
