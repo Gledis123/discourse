@@ -12,6 +12,10 @@ Discourse/Plugins/CallRequiresPlugin:
   Include:
     - "plugins/*/app/controllers/**/*"
 
+Discourse/Plugins/DiscourseEvent:
+  Include:
+    - "plugins/**/*"
+
 Lint/Debugger:
   Exclude:
     - script/**/*
