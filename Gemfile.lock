@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/discourse/rubocop-discourse.git
-  revision: f7c923da0ba5a4a06c0930ce1b5b9c0144d34c98
+  revision: 6717fd4f40eb5dbf57ebde5aee2231511e1e8ee5
   branch: loic-plugins-rules
   specs:
     rubocop-discourse (3.6.0)
