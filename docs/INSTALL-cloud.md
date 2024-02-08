@@ -1,7 +1,7 @@
 **Set up Discourse in the cloud in under 30 minutes** with zero knowledge of Rails or Linux shell. One example
 is [DigitalOcean][do], but these steps will work on any **Docker-compatible** cloud provider or local server. This
 walkthrough will go through these in detail:
-
+gledis my name gledisaliaj3@gmail.commy add
 **[Before you start](#before-you-start)**
 
 1. [Preparing your domain name](#1-preparing-your-domain-name)
