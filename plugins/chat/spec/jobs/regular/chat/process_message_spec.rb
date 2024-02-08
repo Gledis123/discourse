@@ -483,12 +483,12 @@ describe Jobs::Chat::ProcessMessage do
 
         it "notify poster of users who are not allowed to use chat" do
           msg = build_cooked_msg("Hello @#{user_3.username}", user_1)
+          Fabricate(:user_chat_mention, user: user_3, chat_message: msg)
 
           messages =
             MessageBus.track_publish("/chat/#{channel.id}") do
-              to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
-
-              expect(to_notify[:direct_mentions]).to be_empty
+              Chat::Notifier.new(msg, msg.created_at).notify_new
+              expect(Notification.count).to be(0)
             end
 
           unreachable_msg = messages.first
@@ -519,12 +519,12 @@ describe Jobs::Chat::ProcessMessage do
                 user_1,
                 chat_channel: personal_chat_channel,
               )
+            Fabricate(:user_chat_mention, user: user_3, chat_message: msg)
 
             messages =
               MessageBus.track_publish("/chat/#{personal_chat_channel.id}") do
-                to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
-
-                expect(to_notify[:direct_mentions]).to be_empty
+                Chat::Notifier.new(msg, msg.created_at).notify_new
+                expect(Notification.count).to be(0)
               end
 
             unreachable_msg = messages.first
@@ -544,12 +544,12 @@ describe Jobs::Chat::ProcessMessage do
               )
             msg =
               build_cooked_msg("Hello @#{group.name}", user_1, chat_channel: personal_chat_channel)
+            Fabricate(:group_chat_mention, group: group, chat_message: msg)
 
             messages =
               MessageBus.track_publish("/chat/#{personal_chat_channel.id}") do
-                to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
-
-                expect(to_notify[group.name]).to contain_exactly(user_2.id)
+                Chat::Notifier.new(msg, msg.created_at).notify_new
+                expect(Notification.where(user: user_2).count).to be(1)
               end
 
             unreachable_msg = messages.first
