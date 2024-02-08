@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/discourse/rubocop-discourse.git
-  revision: c1ebfa47c63d833314c36f085939ed36f211fea2
+  revision: 52cc0bcc139718be5598c8688b6779fbabc158de
   branch: loic-plugins-rules
   specs:
     rubocop-discourse (3.6.0)
@@ -237,7 +237,7 @@ GEM
     mini_suffix (0.3.3)
       ffi (~> 1.9)
     minio_runner (0.1.2)
-    minitest (5.22.1)
+    minitest (5.22.2)
     mocha (2.1.0)
       ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)

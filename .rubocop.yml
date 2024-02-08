@@ -16,6 +16,10 @@ Discourse/Plugins/DiscourseEvent:
   Include:
     - "plugins/**/*"
 
+Discourse/Plugins/NamespaceMethods:
+  Include:
+    - "plugins/**/*"
+
 Lint/Debugger:
   Exclude:
     - script/**/*
