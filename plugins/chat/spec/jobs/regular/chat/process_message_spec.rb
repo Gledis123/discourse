@@ -369,11 +369,15 @@ describe Jobs::Chat::ProcessMessage do
         include_examples "ensure only channel members are notified"
 
         it "calls guardian can_join_chat_channel?" do
-          Guardian.any_instance.expects(:can_join_chat_channel?).at_least_once
           msg = build_cooked_msg("Hello @#{group.name} and @#{user_2.username}", user_1)
-          to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
+          Fabricate(:group_chat_mention, group: group, chat_message: msg)
+          Fabricate(:user_chat_mention, user: user_2, chat_message: msg)
+
+          Guardian.any_instance.expects(:can_join_chat_channel?).at_least_once
+          Chat::Notifier.new(msg, msg.created_at).notify_new
         end
 
+        # fixme andrei convert the test
         it "establishes a far-left precedence among group mentions" do
           Fabricate(
             :user_chat_channel_membership,
@@ -400,32 +404,40 @@ describe Jobs::Chat::ProcessMessage do
           SiteSetting.max_users_notified_per_group_mention = (group.user_count - 1)
 
           msg = build_cooked_msg("Hello @#{group.name}", user_1)
+          Fabricate(:group_chat_mention, group: group, chat_message: msg)
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
           expect(to_notify[group.name]).to be_nil
+          expect(Notification.count).to be(0)
         end
 
         it "respects the 'max_mentions_per_chat_message' setting and skips notifications" do
           SiteSetting.max_mentions_per_chat_message = 1
 
           msg = build_cooked_msg("Hello @#{user_2.username} and @#{user_3.username}", user_1)
+          Fabricate(:user_chat_mention, user: user_2, chat_message: msg)
+          Fabricate(:user_chat_mention, user: user_3, chat_message: msg)
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
           expect(to_notify[:direct_mentions]).to be_empty
           expect(to_notify[group.name]).to be_nil
+          expect(Notification.count).to be(0)
         end
 
         it "respects the max mentions setting and skips notifications when mixing users and groups" do
           SiteSetting.max_mentions_per_chat_message = 1
 
           msg = build_cooked_msg("Hello @#{user_2.username} and @#{group.name}", user_1)
+          Fabricate(:user_chat_mention, user: user_2, chat_message: msg)
+          Fabricate(:group_chat_mention, group: group, chat_message: msg)
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
           expect(to_notify[:direct_mentions]).to be_empty
           expect(to_notify[group.name]).to be_nil
+          expect(Notification.count).to be(0)
         end
 
         describe "users ignoring or muting the user creating the message" do
@@ -434,11 +446,14 @@ describe Jobs::Chat::ProcessMessage do
             Fabricate(:user_chat_channel_membership, chat_channel: channel, user: user_3)
             Fabricate(:muted_user, user: user_2, muted_user: user_1)
             msg = build_cooked_msg("Hello @#{group.name}", user_1)
+            Fabricate(:group_chat_mention, group: group, chat_message: msg)
 
             to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
             expect(to_notify[:direct_mentions]).to be_empty
             expect(to_notify[group.name]).to contain_exactly(user_3.id)
+            expect(Notification.where(user: user_2).count).to be(0)
+            expect(Notification.where(user: user_3).count).to be(1)
           end
 
           it "does not send notifications to the user inside the group who is ignoring the acting user" do
@@ -451,11 +466,14 @@ describe Jobs::Chat::ProcessMessage do
               expiring_at: 1.day.from_now,
             )
             msg = build_cooked_msg("Hello @#{group.name}", user_1)
+            Fabricate(:group_chat_mention, group: group, chat_message: msg)
 
             to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
             expect(to_notify[:direct_mentions]).to be_empty
             expect(to_notify[group.name]).to contain_exactly(user_3.id)
+            expect(Notification.where(user: user_2).count).to be(0)
+            expect(Notification.where(user: user_3).count).to be(1)
           end
         end
       end
