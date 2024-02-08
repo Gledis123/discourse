@@ -13,9 +13,17 @@ export default function buildOptions(options) {
     emojiDenyList: context.site.denied_emojis,
     siteSettings: context.siteSettings,
     formatUsername,
-    watchedWordsReplace: context.site.watched_words_replace,
-    watchedWordsLink: context.site.watched_words_link,
+    watchedWordsReplace: transformWatchedWords(
+      context.site.watched_words_replace
+    ),
+    watchedWordsLink: transformWatchedWords(context.site.watched_words_link),
     additionalOptions: context.site.markdown_additional_options,
     ...options,
   };
+}
+
+function transformWatchedWords(obj = {}) {
+  return [...Object.entries(obj)].map(([key, value]) => {
+    return [key, value.case_sensitive, value.word, value.replacement];
+  });
 }
