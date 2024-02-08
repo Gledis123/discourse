@@ -196,7 +196,7 @@ function applyEmoji(
   enableShortcuts,
   inlineEmoji,
   customEmojiTranslation,
-  watchedWordsReplacer,
+  watchedWordsReplace,
   emojiDenyList
 ) {
   let result = null;
@@ -206,17 +206,14 @@ function applyEmoji(
     content = emojiUnicodeReplacer(content);
   }
 
-  if (watchedWordsReplacer) {
-    const watchedWordRegex = Object.keys(watchedWordsReplacer);
-
-    watchedWordRegex.forEach((watchedWord) => {
-      if (content?.match(watchedWord)) {
-        const regex = new RegExp(watchedWord, "g");
-        const matches = content.match(regex);
-        const replacement = watchedWordsReplacer[watchedWord].replacement;
+  if (watchedWordsReplace) {
+    watchedWordsReplace.forEach(([regex, , , replacement]) => {
+      if (content?.match(regex)) {
+        const regexp = new RegExp(regex, "g");
+        const matches = content.match(regexp);
 
         matches.forEach(() => {
-          const matchingRegex = regex.exec(content);
+          const matchingRegex = regexp.exec(content);
           if (matchingRegex) {
             content = content.replace(matchingRegex[1], replacement);
           }
