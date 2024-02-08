@@ -67,6 +67,7 @@ describe Jobs::Chat::ProcessMessage do
       shared_examples "channel-wide mentions" do
         it "returns an empty list when the message doesn't include a channel mention" do
           msg = build_cooked_msg(mention.gsub("@", ""), user_1)
+          Fabricate(mention_type, chat_message: msg)
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
@@ -76,6 +77,7 @@ describe Jobs::Chat::ProcessMessage do
         it "will never include someone who is not accepting channel-wide notifications" do
           user_2.user_option.update!(ignore_channel_wide_mention: true)
           msg = build_cooked_msg(mention, user_1)
+          Fabricate(mention_type, chat_message: msg)
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
@@ -85,6 +87,7 @@ describe Jobs::Chat::ProcessMessage do
         it "will never mention when channel is not accepting channel wide mentions" do
           channel.update!(allow_channel_wide_mentions: false)
           msg = build_cooked_msg(mention, user_1)
+          Fabricate(mention_type, chat_message: msg)
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
@@ -94,6 +97,7 @@ describe Jobs::Chat::ProcessMessage do
         it "will publish a mention warning" do
           channel.update!(allow_channel_wide_mentions: false)
           msg = build_cooked_msg(mention, user_1)
+          Fabricate(mention_type, chat_message: msg)
 
           messages =
             MessageBus.track_publish("/chat/#{channel.id}") do
@@ -110,6 +114,7 @@ describe Jobs::Chat::ProcessMessage do
 
         it "includes all members of a channel except the sender" do
           msg = build_cooked_msg(mention, user_1)
+          Fabricate(mention_type, chat_message: msg)
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
@@ -124,6 +129,11 @@ describe Jobs::Chat::ProcessMessage do
           another_channel = Fabricate(:category_channel)
           Fabricate(:user_chat_channel_membership, chat_channel: another_channel, user: user3)
           msg = build_cooked_msg(mention, user_1)
+          if mention_type == :group_chat_mention
+            Fabricate(mention_type, group: group, chat_message: msg)
+          else
+            Fabricate(mention_type, chat_message: msg)
+          end
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
@@ -140,6 +150,11 @@ describe Jobs::Chat::ProcessMessage do
             user: user3,
           )
           msg = build_cooked_msg(mention, user_1)
+          if mention_type == :group_chat_mention
+            Fabricate(mention_type, group: group, chat_message: msg)
+          else
+            Fabricate(mention_type, chat_message: msg)
+          end
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
@@ -157,6 +172,11 @@ describe Jobs::Chat::ProcessMessage do
           )
 
           msg = build_cooked_msg(mention, user_1)
+          if mention_type == :group_chat_mention
+            Fabricate(mention_type, group: group, chat_message: msg)
+          else
+            Fabricate(mention_type, chat_message: msg)
+          end
 
           to_notify = Chat::Notifier.new(msg, msg.created_at).notify_new
 
@@ -166,6 +186,7 @@ describe Jobs::Chat::ProcessMessage do
 
       describe "global_mentions" do
         let(:mention) { "hello @all!" }
+        let(:mention_type) { :all_chat_mention } # fixme andrei, super-hacky but this supports shared examples above
         let(:list_key) { :global_mentions }
 
         include_examples "channel-wide mentions"
@@ -223,6 +244,7 @@ describe Jobs::Chat::ProcessMessage do
 
       describe "here_mentions" do
         let(:mention) { "hello @here!" }
+        let(:mention_type) { :here_chat_mention } # fixme andrei, super-hacky but this supports shared examples above
         let(:list_key) { :here_mentions }
 
         before { user_2.update!(last_seen_at: 4.minutes.ago) }
@@ -364,6 +386,7 @@ describe Jobs::Chat::ProcessMessage do
         before { @chat_group.add(user_3) }
 
         let(:mention) { "hello @#{group.name}!" }
+        let(:mention_type) { :group_chat_mention } # fixme andrei, super-hacky but this supports shared examples above
         let(:list_key) { group.name }
 
         include_examples "ensure only channel members are notified"
