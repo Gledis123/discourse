@@ -482,10 +482,19 @@ Category.reopenClass({
   },
 
   async asyncFindByIds(ids = []) {
+    ids = ids.map((x) => parseInt(x, 10));
+
+    if (!Site.current().lazy_load_categories) {
+      return this.findByIds(ids);
+    }
+
     const result = await categoryMultiCache.fetch(ids);
     if (categoryMultiCache.hadTooManyCalls()) {
       warn(
-        "Multiple calls to Category.asyncFindByIds within a second. Could they be combined?"
+        "Multiple calls to Category.asyncFindByIds within a second. Could they be combined?",
+        {
+          id: "discourse.category.multiple-async-find-by-ids-calls",
+        }
       );
     }
 
